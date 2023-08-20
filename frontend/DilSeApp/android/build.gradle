@@ -19,3 +19,10 @@ buildscript {
         classpath("com.facebook.react:react-native-gradle-plugin")
     }
 }
+
+maven {
+  url("https://maven.fpregistry.io/releases")
+}
+maven {
+  url("https://www.jitpack.io")
+}

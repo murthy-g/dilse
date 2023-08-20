@@ -7,12 +7,14 @@ import App from './App';
 import RegisterScreen from './components/RegisterScreen';  // Assuming you have created this
 import LoginScreen from './components/LoginScreen';
 import ProfilePhoto from './components/ProfilePhoto';
+import BiometricComponent from './components/Biometric';
 
 type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   Register: undefined;
   ProfilePhoto: undefined;
+  Biometric: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -25,6 +27,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="ProfilePhoto" component={ProfilePhoto} />
+        <Stack.Screen name="Biometric" component={BiometricComponent} />
       </Stack.Navigator>
     </NavigationContainer>
   );

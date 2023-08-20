@@ -19,6 +19,12 @@
       "react",
       "jest",
       "node"
+    ],
+    "typeRoots": [
+      "./typings",
+      "./node_modules/@types",
+      "./types", 
+      "./node_modules/@types"
     ]
   },
   "include": [

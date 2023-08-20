@@ -1,35 +1,33 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, PermissionsAndroid } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import Geolocation from 'react-native-geolocation-service';
-import { Picker } from '@react-native-picker/picker'; // Import Picker from the correct package
+import ModalDropdown from 'react-native-modal-dropdown';
 
-// Define the types for the navigation stack's parameters
 type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   Register: undefined;
-  Home: undefined; // Add this line
-  ProfilePhoto: undefined; // Add this line
-  // ... You can add other screens here
+  Home: undefined;
+  ProfilePhoto: undefined;
 };
 
+const ageItems = Array.from({ length: 36 }, (_, index) => ({
+  label: `${19 + index}`,
+  value: `${19 + index}`,
+}));
 
-// Define the type for the RegisterScreen's props
 type RegisterScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Register'>;
 };
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const [name, setName] = useState<string>('');
-  const [age, setAge] = useState<number | string>('');  // Use string here to make it compatible with TextInput
+  const [age, setAge] = useState<number | string>('');
   const [gender, setGender] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [location, setLocation] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [detectedLocation, setDetectedLocation] = useState<string>('');
-
 
   const handleRegister = () => {
     // Construct the request body
@@ -76,48 +74,11 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
       });
   };
 
-  const detectLocation = () => {
-    Geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setDetectedLocation(`Latitude: ${latitude}, Longitude: ${longitude}`);
-        setLocation(`Latitude: ${latitude}, Longitude: ${longitude}`);
-      },
-      (error) => {
-        console.log('Error getting location:', error);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
-  };
-
-  const requestLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Location Permission',
-          message: 'DilSeApp needs access to your location.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        }
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Location permission granted');
-        detectLocation();
-      } else {
-        console.log('Location permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
-
   const validateEmail = (email: string): boolean => {
     // Implement your email validation logic here
     return /^\S+@\S+\.\S+$/.test(email);
   };
-
+  
   const validateAge = (age: number | string): boolean => {
     const ageNumber = Number(age);
     return ageNumber >= 19 && ageNumber <= 55;
@@ -132,24 +93,24 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
         placeholderTextColor="white"
         style={styles.input}
       />
-      <Picker
-        selectedValue={age}
-        onValueChange={(itemValue) => setAge(itemValue)}
-        style={styles.input}
-      >
-        {Array.from({ length: 36 }, (_, index) => (
-          <Picker.Item key={index} label={`${19 + index}`} value={`${19 + index}`} />
-        ))}
-      </Picker>
-      <Picker
-        selectedValue={gender}
-        onValueChange={(itemValue) => setGender(itemValue)}
-        style={styles.input}
-      >
-        <Picker.Item label="Male" value="male" />
-        <Picker.Item label="Female" value="female" />
-        <Picker.Item label="Other" value="other" />
-      </Picker>
+      <ModalDropdown
+        options={['Male', 'Female', 'Other']}
+        defaultValue="Select Gender"
+        style={[styles.input, styles.modalDropdown]}
+        textStyle={styles.modalDropdownText}
+        dropdownStyle={styles.modalDropdownList}
+        dropdownTextStyle={styles.modalDropdownListText}
+        onSelect={(index: any, value: React.SetStateAction<string>) => setGender(value)}
+      />
+      <ModalDropdown
+        options={ageItems.map(item => item.label)}
+        defaultValue="Select Age"
+        style={[styles.input, styles.modalDropdown]}
+        textStyle={styles.modalDropdownText}
+        dropdownStyle={styles.modalDropdownList}
+        dropdownTextStyle={styles.modalDropdownListText}
+        onSelect={(index: any, value: React.SetStateAction<string>) => setAge(value.toString())}
+      />
       <TextInput
         value={email}
         onChangeText={setEmail}
@@ -167,11 +128,11 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
         style={styles.input}
       />
       <TextInput
-        value={detectedLocation} // Display the detected location
-        placeholder="Detected Location"
+        value={location}
+        placeholder="Enter Location"
         placeholderTextColor="white"
-        editable={false} // Disable editing for detected location
         style={styles.input}
+        onChangeText={setLocation}
       />
       <TextInput
         value={phoneNumber}
@@ -181,15 +142,12 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
         keyboardType="phone-pad"
         style={styles.input}
       />
-      <View style={styles.buttonContainer}>
-        <Button title="Register" onPress={handleRegister} color="white" />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Back to Login" onPress={() => navigation.goBack()} color="white" />
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Detect Location" onPress={requestLocationPermission} color="white" />
-      </View>
+      <TouchableOpacity onPress={handleRegister} style={styles.customButton}>
+        <Text style={styles.buttonText}>Register</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.customButton}>
+        <Text style={styles.buttonText}>Back to Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -209,12 +167,15 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     color: 'white',
   },
-  buttonContainer: {
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: 'white',
+  customButton: {
+    backgroundColor: '#555',
+    padding: 10,
+    alignItems: 'center',
     borderRadius: 5,
-    overflow: 'hidden',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: 'white',
   },
   logo: {
     width: 200,
@@ -222,6 +183,34 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
     marginBottom: 20,
+  },
+  modalDropdown: {
+    // Styles for the dropdown button/main component
+    height: 40,
+    minWidth: 150,  // Set minimum width here. Adjust the value as needed.
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 8,
+    borderRadius: 4,
+    justifyContent: 'center',  // Vertically center the text
+  },
+
+  modalDropdownText: {
+    color: 'white',  // Color of the text on the dropdown button
+  },
+
+  modalDropdownList: {
+    // Styles for the dropdown list
+    backgroundColor: '#333',  // Darker background for contrast
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginTop: -10,  // To make it visually connect with the dropdown button
+  },
+
+  modalDropdownListText: {
+    color: 'black',  // Color of the text in the dropdown list
+    padding: 8,  // Padding for each item in the dropdown list
   },
 });
 

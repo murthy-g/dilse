@@ -6,6 +6,7 @@ type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   Register: undefined;
+  Biometric: undefined;
 };
 
 type Props = {
@@ -19,7 +20,7 @@ const App: React.FC<Props> = ({ navigation }) => {
   const onLogoPress = () => {
     Alert.alert(
       "Navigate",
-      "Go to Login or Register page?",
+      "Explore Now",
       [
         {
           text: "Cancel",
@@ -28,7 +29,7 @@ const App: React.FC<Props> = ({ navigation }) => {
         },
         {
           text: "OK",
-          onPress: () => navigation.navigate('Login')  // Navigate to Login on pressing OK
+          onPress: () => navigation.navigate('Biometric')
         }
       ]
     );

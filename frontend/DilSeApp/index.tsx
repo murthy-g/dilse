@@ -5,6 +5,7 @@ import { name as appName } from './app.json';
 import { enableScreens } from 'react-native-screens';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+
 enableScreens();
 
 const AppRoot = () => {
