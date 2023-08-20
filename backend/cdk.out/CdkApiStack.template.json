@@ -1,0 +1,1744 @@
+{
+ "Resources": {
+  "layers958FA6CB": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "CompatibleRuntimes": [
+     "python3.8"
+    ],
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "cd7738c033c2dbad8e7a40b7bcd007f41f15832e66a8bfc34db9dcdd83008ff6.zip"
+    },
+    "Description": "layers"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/layers/Resource",
+    "aws:asset:path": "asset.cd7738c033c2dbad8e7a40b7bcd007f41f15832e66a8bfc34db9dcdd83008ff6.zip",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Content"
+   }
+  },
+  "dilsebucket5F8D596D": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/dilse_bucket/Resource"
+   }
+  },
+  "DilseRole9A5B207E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilseRole/Resource"
+   }
+  },
+  "DilseRoleDefaultPolicy7F337478": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:PutObject"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "dilsebucket5F8D596D",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:DeleteItem",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:dynamodb:us-east-1:897527378750:table/users",
+        "arn:aws:dynamodb:us-east-1:897527378750:table/users/index/EmailIndex"
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DilseRoleDefaultPolicy7F337478",
+    "Roles": [
+     {
+      "Ref": "DilseRole9A5B207E"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilseRole/DefaultPolicy/Resource"
+   }
+  },
+  "LoginHandler5CDFBDA2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+    },
+    "Handler": "lambda_login.lambda_login",
+    "Layers": [
+     {
+      "Ref": "layers958FA6CB"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "DilseRole9A5B207E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "DilseRoleDefaultPolicy7F337478",
+    "DilseRole9A5B207E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/LoginHandler/Resource",
+    "aws:asset:path": "asset.e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "RegisterHandlerD961D579": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+    },
+    "Handler": "lambda_register.lambda_register",
+    "Layers": [
+     {
+      "Ref": "layers958FA6CB"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "DilseRole9A5B207E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "DilseRoleDefaultPolicy7F337478",
+    "DilseRole9A5B207E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/RegisterHandler/Resource",
+    "aws:asset:path": "asset.e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LikeHandler52E34245": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+    },
+    "Handler": "lambda_like.lambda_like",
+    "Layers": [
+     {
+      "Ref": "layers958FA6CB"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "DilseRole9A5B207E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "DilseRoleDefaultPolicy7F337478",
+    "DilseRole9A5B207E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/LikeHandler/Resource",
+    "aws:asset:path": "asset.e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "MatchHandler04464E10": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+    },
+    "Handler": "lambda_getMatches.get_matches",
+    "Layers": [
+     {
+      "Ref": "layers958FA6CB"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "DilseRole9A5B207E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "DilseRoleDefaultPolicy7F337478",
+    "DilseRole9A5B207E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/MatchHandler/Resource",
+    "aws:asset:path": "asset.e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "GetPhotosHandler0E59A942": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+    },
+    "Handler": "lambda_getPhotos.get_photos",
+    "Layers": [
+     {
+      "Ref": "layers958FA6CB"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "DilseRole9A5B207E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "DilseRoleDefaultPolicy7F337478",
+    "DilseRole9A5B207E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/GetPhotosHandler/Resource",
+    "aws:asset:path": "asset.e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "FileUploadHandler6E51A0CB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+    },
+    "Handler": "lambda_fileUpload.upload_file",
+    "Layers": [
+     {
+      "Ref": "layers958FA6CB"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "DilseRole9A5B207E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "DilseRoleDefaultPolicy7F337478",
+    "DilseRole9A5B207E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/FileUploadHandler/Resource",
+    "aws:asset:path": "asset.e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "RecommendationsHandler1C9323AB": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+    },
+    "Handler": "lambda_getrecommendations.get_recommendations",
+    "Layers": [
+     {
+      "Ref": "layers958FA6CB"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "DilseRole9A5B207E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "DilseRoleDefaultPolicy7F337478",
+    "DilseRole9A5B207E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/RecommendationsHandler/Resource",
+    "aws:asset:path": "asset.e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "DilSeApiCE0C17ED": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "This service generates audio from text",
+    "Name": "DilSeApi"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Resource"
+   }
+  },
+  "DilSeApiDeploymentF522734Effb7c0316786a859f262ba30999c0bfa": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "This service generates audio from text",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "DependsOn": [
+    "DilSeApigetphotosGET12A86C93",
+    "DilSeApigetphotosC8009DE5",
+    "DilSeApilikePOST1A004E73",
+    "DilSeApilikeFCEF4299",
+    "DilSeApiloginPOST340FF8F9",
+    "DilSeApilogin4B0338F9",
+    "DilSeApimatchGET11C52F78",
+    "DilSeApimatch0AE3C466",
+    "DilSeApirecommendationsGET96F4DFF5",
+    "DilSeApirecommendations8CF1BD45",
+    "DilSeApiregisterPOSTA98401AD",
+    "DilSeApiregister64740F03",
+    "DilSeApiuploadPOST68D80801",
+    "DilSeApiupload2B4CD684"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Deployment/Resource"
+   }
+  },
+  "DilSeApiDeploymentStageprod046C2A3D": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "DilSeApiDeploymentF522734Effb7c0316786a859f262ba30999c0bfa"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    },
+    "StageName": "prod"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "DilSeApilogin4B0338F9": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DilSeApiCE0C17ED",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "login",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/login/Resource"
+   }
+  },
+  "DilSeApiloginPOSTApiPermissionCdkApiStackDilSeApi6A1B551FPOSTloginB1C371C2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LoginHandler5CDFBDA2",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/",
+       {
+        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+       },
+       "/POST/login"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/login/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..login"
+   }
+  },
+  "DilSeApiloginPOSTApiPermissionTestCdkApiStackDilSeApi6A1B551FPOSTlogin646D07F2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LoginHandler5CDFBDA2",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/test-invoke-stage/POST/login"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/login/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..login"
+   }
+  },
+  "DilSeApiloginPOST340FF8F9": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LoginHandler5CDFBDA2",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "DilSeApilogin4B0338F9"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/login/POST/Resource"
+   }
+  },
+  "DilSeApiregister64740F03": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DilSeApiCE0C17ED",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "register",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/register/Resource"
+   }
+  },
+  "DilSeApiregisterPOSTApiPermissionCdkApiStackDilSeApi6A1B551FPOSTregister20721678": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "RegisterHandlerD961D579",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/",
+       {
+        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+       },
+       "/POST/register"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/register/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..register"
+   }
+  },
+  "DilSeApiregisterPOSTApiPermissionTestCdkApiStackDilSeApi6A1B551FPOSTregisterDBED75FB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "RegisterHandlerD961D579",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/test-invoke-stage/POST/register"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/register/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..register"
+   }
+  },
+  "DilSeApiregisterPOSTA98401AD": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "RegisterHandlerD961D579",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "DilSeApiregister64740F03"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/register/POST/Resource"
+   }
+  },
+  "DilSeApilikeFCEF4299": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DilSeApiCE0C17ED",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "like",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/like/Resource"
+   }
+  },
+  "DilSeApilikePOSTApiPermissionCdkApiStackDilSeApi6A1B551FPOSTlike252254D3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LikeHandler52E34245",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/",
+       {
+        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+       },
+       "/POST/like"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/like/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..like"
+   }
+  },
+  "DilSeApilikePOSTApiPermissionTestCdkApiStackDilSeApi6A1B551FPOSTlikeA4B236D2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LikeHandler52E34245",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/test-invoke-stage/POST/like"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/like/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..like"
+   }
+  },
+  "DilSeApilikePOST1A004E73": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "LikeHandler52E34245",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "DilSeApilikeFCEF4299"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/like/POST/Resource"
+   }
+  },
+  "DilSeApimatch0AE3C466": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DilSeApiCE0C17ED",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "match",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/match/Resource"
+   }
+  },
+  "DilSeApimatchGETApiPermissionCdkApiStackDilSeApi6A1B551FGETmatchCC9F43F7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MatchHandler04464E10",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/",
+       {
+        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+       },
+       "/GET/match"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/match/GET/ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..match"
+   }
+  },
+  "DilSeApimatchGETApiPermissionTestCdkApiStackDilSeApi6A1B551FGETmatchE54078A7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MatchHandler04464E10",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/test-invoke-stage/GET/match"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/match/GET/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..match"
+   }
+  },
+  "DilSeApimatchGET11C52F78": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "MatchHandler04464E10",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "DilSeApimatch0AE3C466"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/match/GET/Resource"
+   }
+  },
+  "DilSeApiupload2B4CD684": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DilSeApiCE0C17ED",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "upload",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/upload/Resource"
+   }
+  },
+  "DilSeApiuploadPOSTApiPermissionCdkApiStackDilSeApi6A1B551FPOSTupload7AE07F01": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "FileUploadHandler6E51A0CB",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/",
+       {
+        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+       },
+       "/POST/upload"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/upload/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..upload"
+   }
+  },
+  "DilSeApiuploadPOSTApiPermissionTestCdkApiStackDilSeApi6A1B551FPOSTupload1074B1D9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "FileUploadHandler6E51A0CB",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/test-invoke-stage/POST/upload"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/upload/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..upload"
+   }
+  },
+  "DilSeApiuploadPOST68D80801": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "FileUploadHandler6E51A0CB",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "DilSeApiupload2B4CD684"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/upload/POST/Resource"
+   }
+  },
+  "DilSeApigetphotosC8009DE5": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DilSeApiCE0C17ED",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "getphotos",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/getphotos/Resource"
+   }
+  },
+  "DilSeApigetphotosGETApiPermissionCdkApiStackDilSeApi6A1B551FGETgetphotosFE96CEE9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetPhotosHandler0E59A942",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/",
+       {
+        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+       },
+       "/GET/getphotos"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/getphotos/GET/ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..getphotos"
+   }
+  },
+  "DilSeApigetphotosGETApiPermissionTestCdkApiStackDilSeApi6A1B551FGETgetphotos4F854969": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "GetPhotosHandler0E59A942",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/test-invoke-stage/GET/getphotos"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/getphotos/GET/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..getphotos"
+   }
+  },
+  "DilSeApigetphotosGET12A86C93": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "GetPhotosHandler0E59A942",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "DilSeApigetphotosC8009DE5"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/getphotos/GET/Resource"
+   }
+  },
+  "DilSeApirecommendations8CF1BD45": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "DilSeApiCE0C17ED",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "recommendations",
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/recommendations/Resource"
+   }
+  },
+  "DilSeApirecommendationsGETApiPermissionCdkApiStackDilSeApi6A1B551FGETrecommendations59C74AAB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "RecommendationsHandler1C9323AB",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/",
+       {
+        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+       },
+       "/GET/recommendations"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/recommendations/GET/ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..recommendations"
+   }
+  },
+  "DilSeApirecommendationsGETApiPermissionTestCdkApiStackDilSeApi6A1B551FGETrecommendations3B7C62C4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "RecommendationsHandler1C9323AB",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "DilSeApiCE0C17ED"
+       },
+       "/test-invoke-stage/GET/recommendations"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/recommendations/GET/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..recommendations"
+   }
+  },
+  "DilSeApirecommendationsGET96F4DFF5": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "RecommendationsHandler1C9323AB",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "DilSeApirecommendations8CF1BD45"
+    },
+    "RestApiId": {
+     "Ref": "DilSeApiCE0C17ED"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeApi/Default/recommendations/GET/Resource"
+   }
+  },
+  "ApiGatewayAccessLogsFB871B4C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/ApiGatewayAccessLogs/Resource"
+   }
+  },
+  "DilSeRole19217CAE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeRole/Resource"
+   }
+  },
+  "DilSeRoleDefaultPolicy3DC2C34C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ApiGatewayAccessLogsFB871B4C",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "DilSeRoleDefaultPolicy3DC2C34C",
+    "Roles": [
+     {
+      "Ref": "DilSeRole19217CAE"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/DilSeRole/DefaultPolicy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WQy07DMBBFv6V7x5CWDcu2CDZFREViW02dIQxx7MgPVVHkf8ePIDWrOTO+PrJny59r/riBm61E21eSrnz+dCB6FkeXWcJwbYHPJ5jQfKGxpBU7fqtV/+qVcMvBPTdoBrIpEpjdXcBadJbvU4k9nw9e9OgOYJEVTJcKBUYw8PmsJaZhro2WJKYszhQYjNSBwxtMMYrW7UfK6QVfcJR6GlBl8V0XP9hlb4GY194IzC/5bxZR4Xd0P7pNo0KBSd3ZuBbdvRntx7yShUNg+YvJTapbCT+8G71bqSMftWrJ5TU1U9Srhx2va/60+bVElfHK0YD8XOofDNdK4LEBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "CdkApiStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "DilSeApiEndpoint55A37C20": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "DilSeApiCE0C17ED"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

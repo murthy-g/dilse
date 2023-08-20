@@ -1,0 +1,20 @@
+curl -X POST http://127.0.0.1:3000/register \
+     -H "Content-Type: application/json" \
+     -d '{
+         "name": "John Doe",
+         "email": "johndoe@example.com",
+         "password": "securepassword",
+         "age": 25,
+         "gender": "male",
+         "location": "New York"
+     }'
+
+
+curl -X POST http://127.0.0.1:3000/login \
+     -H "Content-Type: application/json" \
+     -d '{
+         "email": "johndoe@example.com",
+         "password": "securepassword"
+     }'
+
+curl http://localhost:3000 -H "Content-Type: application/json"

@@ -1,0 +1,5 @@
+Flask
+boto3
+Flask-Uploads
+pytest
+pytest-flask

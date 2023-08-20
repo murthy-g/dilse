@@ -1,0 +1,2253 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "CdkApiStack": {
+        "id": "CdkApiStack",
+        "path": "CdkApiStack",
+        "children": {
+          "layers": {
+            "id": "layers",
+            "path": "CdkApiStack/layers",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/layers/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/layers/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/layers/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/layers/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "compatibleRuntimes": [
+                      "python3.8"
+                    ],
+                    "content": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "cd7738c033c2dbad8e7a40b7bcd007f41f15832e66a8bfc34db9dcdd83008ff6.zip"
+                    },
+                    "description": "layers"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.LayerVersion",
+              "version": "2.91.0"
+            }
+          },
+          "dilse_bucket": {
+            "id": "dilse_bucket",
+            "path": "CdkApiStack/dilse_bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/dilse_bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.91.0"
+            }
+          },
+          "DilseRole": {
+            "id": "DilseRole",
+            "path": "CdkApiStack/DilseRole",
+            "children": {
+              "ImportDilseRole": {
+                "id": "ImportDilseRole",
+                "path": "CdkApiStack/DilseRole/ImportDilseRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/DilseRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.91.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "CdkApiStack/DilseRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkApiStack/DilseRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject",
+                                "s3:PutObject"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "dilsebucket5F8D596D",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "/*"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": [
+                                "dynamodb:DeleteItem",
+                                "dynamodb:GetItem",
+                                "dynamodb:PutItem",
+                                "dynamodb:Query",
+                                "dynamodb:Scan",
+                                "dynamodb:UpdateItem"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                "arn:aws:dynamodb:us-east-1:897527378750:table/users",
+                                "arn:aws:dynamodb:us-east-1:897527378750:table/users/index/EmailIndex"
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "DilseRoleDefaultPolicy7F337478",
+                        "roles": [
+                          {
+                            "Ref": "DilseRole9A5B207E"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.91.0"
+            }
+          },
+          "LoginHandler": {
+            "id": "LoginHandler",
+            "path": "CdkApiStack/LoginHandler",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/LoginHandler/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/LoginHandler/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/LoginHandler/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/LoginHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+                    },
+                    "handler": "lambda_login.lambda_login",
+                    "layers": [
+                      {
+                        "Ref": "layers958FA6CB"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DilseRole9A5B207E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.91.0"
+            }
+          },
+          "RegisterHandler": {
+            "id": "RegisterHandler",
+            "path": "CdkApiStack/RegisterHandler",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/RegisterHandler/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/RegisterHandler/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/RegisterHandler/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/RegisterHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+                    },
+                    "handler": "lambda_register.lambda_register",
+                    "layers": [
+                      {
+                        "Ref": "layers958FA6CB"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DilseRole9A5B207E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.91.0"
+            }
+          },
+          "LikeHandler": {
+            "id": "LikeHandler",
+            "path": "CdkApiStack/LikeHandler",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/LikeHandler/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/LikeHandler/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/LikeHandler/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/LikeHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+                    },
+                    "handler": "lambda_like.lambda_like",
+                    "layers": [
+                      {
+                        "Ref": "layers958FA6CB"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DilseRole9A5B207E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.91.0"
+            }
+          },
+          "MatchHandler": {
+            "id": "MatchHandler",
+            "path": "CdkApiStack/MatchHandler",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/MatchHandler/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/MatchHandler/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/MatchHandler/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/MatchHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+                    },
+                    "handler": "lambda_getMatches.get_matches",
+                    "layers": [
+                      {
+                        "Ref": "layers958FA6CB"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DilseRole9A5B207E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.91.0"
+            }
+          },
+          "GetPhotosHandler": {
+            "id": "GetPhotosHandler",
+            "path": "CdkApiStack/GetPhotosHandler",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/GetPhotosHandler/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/GetPhotosHandler/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/GetPhotosHandler/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/GetPhotosHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+                    },
+                    "handler": "lambda_getPhotos.get_photos",
+                    "layers": [
+                      {
+                        "Ref": "layers958FA6CB"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DilseRole9A5B207E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.91.0"
+            }
+          },
+          "FileUploadHandler": {
+            "id": "FileUploadHandler",
+            "path": "CdkApiStack/FileUploadHandler",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/FileUploadHandler/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/FileUploadHandler/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/FileUploadHandler/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/FileUploadHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+                    },
+                    "handler": "lambda_fileUpload.upload_file",
+                    "layers": [
+                      {
+                        "Ref": "layers958FA6CB"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DilseRole9A5B207E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.91.0"
+            }
+          },
+          "RecommendationsHandler": {
+            "id": "RecommendationsHandler",
+            "path": "CdkApiStack/RecommendationsHandler",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "CdkApiStack/RecommendationsHandler/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "CdkApiStack/RecommendationsHandler/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "CdkApiStack/RecommendationsHandler/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/RecommendationsHandler/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "e61956b9b6d668d4cbb88f23f5dfac2c5f583d747361b4786ff1ad6add82fd92.zip"
+                    },
+                    "handler": "lambda_getrecommendations.get_recommendations",
+                    "layers": [
+                      {
+                        "Ref": "layers958FA6CB"
+                      }
+                    ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DilseRole9A5B207E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.91.0"
+            }
+          },
+          "DilSeApi": {
+            "id": "DilSeApi",
+            "path": "CdkApiStack/DilSeApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/DilSeApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "This service generates audio from text",
+                    "name": "DilSeApi"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
+                  "version": "2.91.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "CdkApiStack/DilSeApi/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkApiStack/DilSeApi/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "This service generates audio from text",
+                        "restApiId": {
+                          "Ref": "DilSeApiCE0C17ED"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
+                  "version": "2.91.0"
+                }
+              },
+              "DeploymentStage.prod": {
+                "id": "DeploymentStage.prod",
+                "path": "CdkApiStack/DilSeApi/DeploymentStage.prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkApiStack/DilSeApi/DeploymentStage.prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "deploymentId": {
+                          "Ref": "DilSeApiDeploymentF522734Effb7c0316786a859f262ba30999c0bfa"
+                        },
+                        "restApiId": {
+                          "Ref": "DilSeApiCE0C17ED"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
+                  "version": "2.91.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "CdkApiStack/DilSeApi/Endpoint",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.91.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "CdkApiStack/DilSeApi/Default",
+                "children": {
+                  "login": {
+                    "id": "login",
+                    "path": "CdkApiStack/DilSeApi/Default/login",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkApiStack/DilSeApi/Default/login/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "DilSeApiCE0C17ED",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "login",
+                            "restApiId": {
+                              "Ref": "DilSeApiCE0C17ED"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.91.0"
+                        }
+                      },
+                      "POST": {
+                        "id": "POST",
+                        "path": "CdkApiStack/DilSeApi/Default/login/POST",
+                        "children": {
+                          "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..login": {
+                            "id": "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..login",
+                            "path": "CdkApiStack/DilSeApi/Default/login/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..login",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "LoginHandler5CDFBDA2",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+                                      },
+                                      "/POST/login"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..login": {
+                            "id": "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..login",
+                            "path": "CdkApiStack/DilSeApi/Default/login/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..login",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "LoginHandler5CDFBDA2",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/test-invoke-stage/POST/login"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CdkApiStack/DilSeApi/Default/login/POST/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "POST",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "LoginHandler5CDFBDA2",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "DilSeApilogin4B0338F9"
+                                },
+                                "restApiId": {
+                                  "Ref": "DilSeApiCE0C17ED"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.91.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.91.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "register": {
+                    "id": "register",
+                    "path": "CdkApiStack/DilSeApi/Default/register",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkApiStack/DilSeApi/Default/register/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "DilSeApiCE0C17ED",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "register",
+                            "restApiId": {
+                              "Ref": "DilSeApiCE0C17ED"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.91.0"
+                        }
+                      },
+                      "POST": {
+                        "id": "POST",
+                        "path": "CdkApiStack/DilSeApi/Default/register/POST",
+                        "children": {
+                          "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..register": {
+                            "id": "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..register",
+                            "path": "CdkApiStack/DilSeApi/Default/register/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..register",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "RegisterHandlerD961D579",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+                                      },
+                                      "/POST/register"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..register": {
+                            "id": "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..register",
+                            "path": "CdkApiStack/DilSeApi/Default/register/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..register",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "RegisterHandlerD961D579",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/test-invoke-stage/POST/register"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CdkApiStack/DilSeApi/Default/register/POST/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "POST",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "RegisterHandlerD961D579",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "DilSeApiregister64740F03"
+                                },
+                                "restApiId": {
+                                  "Ref": "DilSeApiCE0C17ED"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.91.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.91.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "like": {
+                    "id": "like",
+                    "path": "CdkApiStack/DilSeApi/Default/like",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkApiStack/DilSeApi/Default/like/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "DilSeApiCE0C17ED",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "like",
+                            "restApiId": {
+                              "Ref": "DilSeApiCE0C17ED"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.91.0"
+                        }
+                      },
+                      "POST": {
+                        "id": "POST",
+                        "path": "CdkApiStack/DilSeApi/Default/like/POST",
+                        "children": {
+                          "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..like": {
+                            "id": "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..like",
+                            "path": "CdkApiStack/DilSeApi/Default/like/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..like",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "LikeHandler52E34245",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+                                      },
+                                      "/POST/like"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..like": {
+                            "id": "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..like",
+                            "path": "CdkApiStack/DilSeApi/Default/like/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..like",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "LikeHandler52E34245",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/test-invoke-stage/POST/like"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CdkApiStack/DilSeApi/Default/like/POST/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "POST",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "LikeHandler52E34245",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "DilSeApilikeFCEF4299"
+                                },
+                                "restApiId": {
+                                  "Ref": "DilSeApiCE0C17ED"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.91.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.91.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "match": {
+                    "id": "match",
+                    "path": "CdkApiStack/DilSeApi/Default/match",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkApiStack/DilSeApi/Default/match/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "DilSeApiCE0C17ED",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "match",
+                            "restApiId": {
+                              "Ref": "DilSeApiCE0C17ED"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.91.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "CdkApiStack/DilSeApi/Default/match/GET",
+                        "children": {
+                          "ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..match": {
+                            "id": "ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..match",
+                            "path": "CdkApiStack/DilSeApi/Default/match/GET/ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..match",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "MatchHandler04464E10",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+                                      },
+                                      "/GET/match"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..match": {
+                            "id": "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..match",
+                            "path": "CdkApiStack/DilSeApi/Default/match/GET/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..match",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "MatchHandler04464E10",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/test-invoke-stage/GET/match"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CdkApiStack/DilSeApi/Default/match/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "GET",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MatchHandler04464E10",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "DilSeApimatch0AE3C466"
+                                },
+                                "restApiId": {
+                                  "Ref": "DilSeApiCE0C17ED"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.91.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.91.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "upload": {
+                    "id": "upload",
+                    "path": "CdkApiStack/DilSeApi/Default/upload",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkApiStack/DilSeApi/Default/upload/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "DilSeApiCE0C17ED",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "upload",
+                            "restApiId": {
+                              "Ref": "DilSeApiCE0C17ED"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.91.0"
+                        }
+                      },
+                      "POST": {
+                        "id": "POST",
+                        "path": "CdkApiStack/DilSeApi/Default/upload/POST",
+                        "children": {
+                          "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..upload": {
+                            "id": "ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..upload",
+                            "path": "CdkApiStack/DilSeApi/Default/upload/POST/ApiPermission.CdkApiStackDilSeApi6A1B551F.POST..upload",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "FileUploadHandler6E51A0CB",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+                                      },
+                                      "/POST/upload"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..upload": {
+                            "id": "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..upload",
+                            "path": "CdkApiStack/DilSeApi/Default/upload/POST/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.POST..upload",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "FileUploadHandler6E51A0CB",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/test-invoke-stage/POST/upload"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CdkApiStack/DilSeApi/Default/upload/POST/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "POST",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "FileUploadHandler6E51A0CB",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "DilSeApiupload2B4CD684"
+                                },
+                                "restApiId": {
+                                  "Ref": "DilSeApiCE0C17ED"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.91.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.91.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "getphotos": {
+                    "id": "getphotos",
+                    "path": "CdkApiStack/DilSeApi/Default/getphotos",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkApiStack/DilSeApi/Default/getphotos/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "DilSeApiCE0C17ED",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "getphotos",
+                            "restApiId": {
+                              "Ref": "DilSeApiCE0C17ED"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.91.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "CdkApiStack/DilSeApi/Default/getphotos/GET",
+                        "children": {
+                          "ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..getphotos": {
+                            "id": "ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..getphotos",
+                            "path": "CdkApiStack/DilSeApi/Default/getphotos/GET/ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..getphotos",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "GetPhotosHandler0E59A942",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+                                      },
+                                      "/GET/getphotos"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..getphotos": {
+                            "id": "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..getphotos",
+                            "path": "CdkApiStack/DilSeApi/Default/getphotos/GET/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..getphotos",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "GetPhotosHandler0E59A942",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/test-invoke-stage/GET/getphotos"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CdkApiStack/DilSeApi/Default/getphotos/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "GET",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "GetPhotosHandler0E59A942",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "DilSeApigetphotosC8009DE5"
+                                },
+                                "restApiId": {
+                                  "Ref": "DilSeApiCE0C17ED"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.91.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.91.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.91.0"
+                    }
+                  },
+                  "recommendations": {
+                    "id": "recommendations",
+                    "path": "CdkApiStack/DilSeApi/Default/recommendations",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "CdkApiStack/DilSeApi/Default/recommendations/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "DilSeApiCE0C17ED",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "recommendations",
+                            "restApiId": {
+                              "Ref": "DilSeApiCE0C17ED"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.91.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "CdkApiStack/DilSeApi/Default/recommendations/GET",
+                        "children": {
+                          "ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..recommendations": {
+                            "id": "ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..recommendations",
+                            "path": "CdkApiStack/DilSeApi/Default/recommendations/GET/ApiPermission.CdkApiStackDilSeApi6A1B551F.GET..recommendations",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "RecommendationsHandler1C9323AB",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "DilSeApiDeploymentStageprod046C2A3D"
+                                      },
+                                      "/GET/recommendations"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..recommendations": {
+                            "id": "ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..recommendations",
+                            "path": "CdkApiStack/DilSeApi/Default/recommendations/GET/ApiPermission.Test.CdkApiStackDilSeApi6A1B551F.GET..recommendations",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "RecommendationsHandler1C9323AB",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:",
+                                      {
+                                        "Ref": "AWS::Region"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":",
+                                      {
+                                        "Ref": "DilSeApiCE0C17ED"
+                                      },
+                                      "/test-invoke-stage/GET/recommendations"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.91.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "CdkApiStack/DilSeApi/Default/recommendations/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "GET",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "RecommendationsHandler1C9323AB",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "DilSeApirecommendations8CF1BD45"
+                                },
+                                "restApiId": {
+                                  "Ref": "DilSeApiCE0C17ED"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.91.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.91.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
+              "version": "2.91.0"
+            }
+          },
+          "ApiGatewayAccessLogs": {
+            "id": "ApiGatewayAccessLogs",
+            "path": "CdkApiStack/ApiGatewayAccessLogs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/ApiGatewayAccessLogs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.91.0"
+            }
+          },
+          "DilSeRole": {
+            "id": "DilSeRole",
+            "path": "CdkApiStack/DilSeRole",
+            "children": {
+              "ImportDilSeRole": {
+                "id": "ImportDilSeRole",
+                "path": "CdkApiStack/DilSeRole/ImportDilSeRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.91.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "CdkApiStack/DilSeRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "apigateway.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.91.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "CdkApiStack/DilSeRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CdkApiStack/DilSeRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "ApiGatewayAccessLogsFB871B4C",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "DilSeRoleDefaultPolicy3DC2C34C",
+                        "roles": [
+                          {
+                            "Ref": "DilSeRole19217CAE"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.91.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.91.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "CdkApiStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CdkApiStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.91.0"
+                }
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "CdkApiStack/CDKMetadata/Condition",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "2.91.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CdkApiStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.91.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CdkApiStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.91.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.91.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.69"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.91.0"
+    }
+  }
+}
